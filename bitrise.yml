@@ -6,9 +6,9 @@ app:
   # An example secret param, define it (EW_API_TOKEN) in .bitrise.secrets.yml
   - EW_API_TOKEN: $EW_API_TOKEN
   # If you want to share this step into a StepLib
-  - BITRISE_STEP_ID: run-android-instrumentation-tests
+  - BITRISE_STEP_ID: emulator-wtf-android-test
   - BITRISE_STEP_VERSION: "0.0.1"
-  - BITRISE_STEP_GIT_CLONE_URL: https://github.com/emulator-wtf/bitrise-step-run-android-instrumentation-tests.git
+  - BITRISE_STEP_GIT_CLONE_URL: https://github.com/emulator-wtf/run-tests-bitrise.git
   - MY_STEPLIB_REPO_FORK_GIT_URL: $MY_STEPLIB_REPO_FORK_GIT_URL
 
 workflows:
@@ -43,10 +43,10 @@ workflows:
         - token: $EW_API_TOKEN
         - app: $BITRISE_APK_PATH
         - test: $BITRISE_TEST_APK_PATH
-        - environment_variables: "size=small"
+        - environment_variable_list: "size=small"
         - use_orchestrator: "yes"
         - clear_package_data: "yes"
-        - num_shards: 20
+        - num_shards: 16
     - script:
         inputs:
         - content: |

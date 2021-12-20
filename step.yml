@@ -8,7 +8,7 @@
 # - Bitrise CLI guides: http://devcenter.bitrise.io/bitrise-cli/
 
 title: |-
-  Run instrumentation tests
+  Run instrumentation tests on emulator.wtf
 summary: |
   Run your Android UI tests with [emulator.wtf](https://emulator.wtf).
 description: |
@@ -20,9 +20,6 @@ description: |
 website: https://emulator.wtf
 source_code_url: https://github.com/emulator-wtf/run-tests-bitrise
 support_url: https://github.com/emulator-wtf/run-tests-bitrise/issues
-host_os_tags:
-  - osx-10.10
-  - ubuntu-16.04
 
 # If this step should be available only for certain project types
 # just uncomment this `project_type_tags` section and include all the
@@ -48,17 +45,9 @@ project_type_tags:
 type_tags:
   - test
 
-is_requires_admin_user: true
 is_always_run: false
 is_skippable: false
 run_if: ""
-
-deps:
-  brew:
-    - name: curl
-  apt_get:
-    - name: curl
-
 
 toolkit:
   bash:
@@ -130,6 +119,7 @@ inputs:
   - with_coverage: "no"
     opts:
       title: "Collect code coverage data while executing the test"
+      summary: "Enable to capture test run coverage data and store the results (one or more `.exec` files) in the run outputs path"
       value_options:
         - "yes"
         - "no"
@@ -137,28 +127,30 @@ inputs:
     opts:
       title: "Output path where test run outputs (junit XML, logcat, files) will be stored."
       summary: "Using $BITRISE_TEST_RESULT_DIR here will make sure that they are also available under the Test Reports view"
-  - additional_apks:
+  - additional_apk_list:
     opts:
-      title: "Additional APKs to install"
-      summary: "A comma separated list of additional APKs to install, in addition to those being directly tested."
-  - environment_variables:
+      title: "List of additional APKs to install"
+      summary: "A pipe (`|`) separated list of additional APKs to install, in addition to those being directly tested."
+      description: |
+        A pipe (`|`) separated list of local file paths to additional APKs that should be installed to the target emulator before the test run starts.
+  - environment_variable_list:
     opts:
       title: "Test extra options"
       summary: "Extra options are passed as extra options to the `am instrument` command."
       description: |
-        Comma separated list of key=value pairs that are passed as extra options to the `am instrument` command.
+        Pipe (`|`) separated list of key=value pairs that are passed as extra options to the `am instrument` command.
 
         Some common examples of supported extras can be found [here](https://developer.android.com/studio/test/command-line#AMOptionsSyntax)
 
         Example use-cases:
-          * Run second shard out of 3 shards: `numShards=3,shardIndex=1`
+          * Run second shard out of 3 shards: `numShards=3|shardIndex=1`
           * Run tests in a specific class: `class=com.example.app.MyTestClass`
-  - directories_to_pull:
+  - directories_to_pull_list:
     opts:
       title: "Pull additional directories"
       summary: "Pull these directories from the emulator into the output path"
       description: |
-        Comma separated directories that should be pulled from the emulator and that will be stored in the output path together with tests results.
+        Pipe (`|`) separated list of directories that should be pulled from the emulator and that will be stored in the output path together with tests results.
 
 
 outputs:

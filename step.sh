@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-curl -s -S https://maven.emulator.wtf/releases/ew-cli -o ./ew-cli  && chmod a+x ./ew-cli
+chmod a+x ./ew-cli
 
 ARGS="--token ${token} --app ${app} --test ${test} "
 if [ ! -z ${num_shards} ]; then ARGS+="--num-shards ${num_shards} "; fi
@@ -10,9 +10,9 @@ if [ ${use_orchestrator} == "yes" ]; then ARGS+="--use-orchestrator "; fi
 if [ ${clear_package_data} == "yes" ]; then ARGS+="--clear-package-data "; fi
 if [ ${with_coverage} == "yes" ]; then ARGS+="--with-coverage "; fi
 if [ ! -z ${outputs_dir} ]; then ARGS+="--outputs-dir ${outputs_dir} "; fi
-if [ ! -z ${additional_apks} ]; then ARGS+="--additional-apks ${additional_apks} "; fi
-if [ ! -z ${environment_variables} ]; then ARGS+="--environment-variables ${environment_variables} "; fi
-if [ ! -z ${directories_to_pull} ]; then ARGS+="--directories-to-pull ${directories_to_pull} "; fi
+if [ ! -z ${additional_apk_list} ]; then ARGS+="--additional-apks ${additional_apk_list//|/,} "; fi
+if [ ! -z ${environment_variable_list} ]; then ARGS+="--environment-variables ${environment_variable_list//|/,} "; fi
+if [ ! -z ${directories_to_pull_list} ]; then ARGS+="--directories-to-pull ${directories_to_pull_list//|/,} "; fi
 
 sh ./ew-cli ${ARGS}
 #

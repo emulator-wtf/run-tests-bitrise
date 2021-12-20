@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# Check for java
+
+if ! [ -x "$(command -v java)" ]; then
+  echo "No java installed!"
+  exit 1
+fi
+
+# Figure out latest cli version
+
+if [ -z "${EW_VERSION}" ]; then
+  if [ -x "$(command -v curl)" ]; then
+    cli_version=$(curl -s https://maven.emulator.wtf/releases/wtf/emulator/ew-cli/maven-metadata.xml | grep latest | sed "s/.*<latest>\([^<]*\)<\/latest>.*/\1/")
+  elif [ -x "$(command -v wget)" ]; then
+    cli_version=$(wget -q -O - https://maven.emulator.wtf/releases/wtf/emulator/ew-cli/maven-metadata.xml | grep latest | sed "s/.*<latest>\([^<]*\)<\/latest>.*/\1/")
+  else
+    echo "Neither curl or wget could not be found"
+    exit 1
+  fi
+else
+  cli_version=${EW_VERSION}
+fi
+
+# Fill the cache if necessary
+
+remote_jar="https://maven.emulator.wtf/releases/wtf/emulator/ew-cli/${cli_version}/ew-cli-${cli_version}.jar"
+jar_dir="${HOME}/.cache/emulator-wtf"
+jar="${jar_dir}/ew-cli-${cli_version}.jar"
+
+if ! [ -f "${jar}" ]; then
+  mkdir -p "${jar_dir}"
+  if [ -x "$(command -v curl)" ]; then
+    curl -s -o "${jar}" "${remote_jar}"
+  elif [ -x "$(command -v wget)" ]; then
+    wget -q -O "${jar}" "${remote_jar}"
+  fi
+fi
+
+JAVA_VER=$(java -version 2>&1 | sed -n ';s/.* version "\(.*\)\.\(.*\)\..*".*/\1\2/p;')
+
+if [ "$JAVA_VER" -ge 90 ]; then
+  # silence retrofit warnings on JDK9+
+  java "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED" -jar "${jar}" "$@"
+else
+  java -jar "${jar}" "$@"
+fi
